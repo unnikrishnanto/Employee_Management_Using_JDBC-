@@ -423,7 +423,7 @@ public class UpdateEmployee extends JFrame {
 	// method to connect db 
 	
 	private void connectDB(JFrame frame) {
-		String url = "jdbc:mysql://localhost/JDBCKodnest?user=root&password=root";
+		String url = "jdbc:mysql://localhost/JDBCKodnest?user=root&password=11%4022y%40M0%21.";
 		try{
 			con = DriverManager.getConnection(url);
 			JOptionPane.showMessageDialog(null, "Connection Sucessful..");
@@ -527,6 +527,10 @@ public class UpdateEmployee extends JFrame {
 			con.setAutoCommit(false);
 			if (updateId) {
 	            String newId = idField.getText().trim();
+	            if (newId.isEmpty()) {
+	                JOptionPane.showMessageDialog(null, "New ID cannot be empty.");
+	                return;
+	            }
 	            idPstmt = con.prepareStatement("UPDATE employee SET id = ? WHERE id = ?");
 	            idPstmt.setString(1, newId);
 	            idPstmt.setString(2, currentId);
@@ -545,7 +549,7 @@ public class UpdateEmployee extends JFrame {
 
 	        // Set parameters for other updates
 	        othersPstmt.setString(1, updateName ? nameField.getText().trim() : null);
-	        othersPstmt.setDouble(2, updateSalary ? Double.parseDouble(salaryField.getText().trim().isBlank() ? "0" : salaryField.getText().trim()) : null);
+	        othersPstmt.setObject(2, updateSalary ? parseSalary(salaryField.getText().trim()) : null);
 	        othersPstmt.setString(3, updateEmail ? emailField.getText().trim() : null);
 	        othersPstmt.setString(4, updatePhone ? phoneField.getText().trim() : null);
 	        othersPstmt.setString(5, updateAddress ? addressField.getText().trim() : null);
@@ -585,5 +589,14 @@ public class UpdateEmployee extends JFrame {
 				
 			}
 		}
+	}
+	
+	private double parseSalary(String salary) {
+	    try {
+	        return salary.isBlank() ? 0 : Double.parseDouble(salary);
+	    } catch (NumberFormatException e) {
+	        JOptionPane.showMessageDialog(null, "Invalid salary input. Defaulting to 0.");
+	        return 0;
+	    }
 	}
 }
